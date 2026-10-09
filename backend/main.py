@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from app.mqtt_client import publish_message
+from mqtt_client import publish_message
 
 app = FastAPI(title="FastAPI MQTT Demo")
 

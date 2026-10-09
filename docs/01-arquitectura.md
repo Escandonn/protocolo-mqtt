@@ -1,25 +1,42 @@
 # Arquitectura del Sistema
 
-## Arquitectura Inicial
+Este proyecto demuestra una arquitectura de tres componentes comunicándose mediante dos protocolos diferentes.
 
-Este proyecto demuestra una arquitectura de tres componentes comunicándose mediante dos protocolos diferentes:
+## Estructura del Proyecto
 
 ```text
-Cliente HTTP
-     │
-     ▼
- FastAPI
-     │
-     │ MQTT Publish
-     ▼
+fastapi-mqtt-example/
+│
+├── backend/
+│   ├── __init__.py
+│   ├── main.py          # FastAPI con endpoint POST /mqtt/publicar
+│   └── mqtt_client.py   # Cliente MQTT (paho-mqtt) para publicar
+│
+├── mqtt-frontend/
+│   └── subscriber.py    # Suscriptor MQTT que imprime con print()
+│
+├── docs/
+└── requirements.txt
+```
+
+## Arquitectura General
+
+```text
+HTTP
+ │
+ ▼
+ FastAPI (backend/)
+ │
+ │ MQTT Publish
+ ▼
  MQTT Broker
-     │
-     │ MQTT Subscribe
-     ▼
- Python Subscriber
-     │
-     ▼
-   print()
+ │
+ │ MQTT Subscribe
+ ▼
+ Python Subscriber (mqtt-frontend/)
+ │
+ ▼
+ print()
 ```
 
 ## Componentes
@@ -28,12 +45,12 @@ Cliente HTTP
 - Cualquier herramienta que pueda hacer peticiones HTTP (curl, Postman, navegador)
 - Envía peticiones POST a FastAPI
 
-### 2. FastAPI (app/main.py)
+### 2. FastAPI (backend/main.py)
 - Framework web para crear APIs REST
 - Expone el endpoint `POST /mqtt/publicar`
 - Actúa como **Publisher MQTT**: recibe HTTP y publica en MQTT
 
-### 3. Cliente MQTT de FastAPI (app/mqtt_client.py)
+### 3. MQTT Client (backend/mqtt_client.py)
 - Módulo que encapsula la lógica de publicación MQTT
 - Usa la librería `paho-mqtt`
 - Función principal: `publish_message(message)`
@@ -43,9 +60,9 @@ Cliente HTTP
 - Recibe mensajes de publishers y los entrega a subscribers
 - No guarda estado de los clientes (salvo sesiones persistentes)
 
-### 5. Python Subscriber (subscriber/subscriber.py)
+### 5. Python Subscriber (mqtt-frontend/subscriber.py)
 - Programa independiente que se conecta al broker
-- Se suscribe al topic `demo/mensaje`
+- Se suscribe al topic `demo/mensagem`
 - Actúa como **Subscriber MQTT**: recibe mensajes y los imprime
 
 ## Responsabilidad de Cada Componente
@@ -70,16 +87,16 @@ Cliente HTTP
 3. mqtt_client.py conecta a localhost:1883
                     │
                     ▼
-4. Publica en topic "demo/mensaje"
+4. Publica en topic "demo/mensagem"
                     │
                     ▼
-5. Mosquitto recibe y ve suscriptores en "demo/mensaje"
+5. Mosquitto recibe y ve suscriptores en "demo/mensagem"
                     │
                     ▼
 6. Entrega mensaje a subscriber.py
                     │
                     ▼
-7. subscriber.py ejecuta print("Mensaje recibido: Hola")
+7. subscriber.py ejecuta print("Nuevo mensaje recibido: Hola")
 ```
 
 ## Por Qué FastAPI Está Separado de MQTT
