@@ -3,22 +3,53 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout>
-  <div style="display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
-    <button id="enviar" style="padding: 20px 40px; font-size: 18px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 8px;">
+  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: Arial, sans-serif; gap: 20px;">
+    <h1 style="color: #333;">FastAPI + MQTT Demo</h1>
+    
+    <button id="enviar" style="padding: 20px 40px; font-size: 18px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 8px; transition: background-color 0.3s;">
       Enviar mensaje MQTT
     </button>
+    
+    <div id="estado" style="font-size: 16px; color: #666; min-height: 24px;"></div>
   </div>
 
   <script>
-    const btn = document.getElementById('enviar');
+    const btn = document.getElementById('enviar') as HTMLButtonElement;
+    const estado = document.getElementById('estado') as HTMLDivElement;
+
     btn.addEventListener('click', async () => {
-      const response = await fetch('http://127.0.0.1:8000/mqtt/publicar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mensaje: 'Hola desde el frontend' })
-      });
-      const data = await response.json();
-      alert('Respuesta: ' + JSON.stringify(data));
+      // Desactivar botón y mostrar spinner
+      btn.disabled = true;
+      btn.style.backgroundColor = '#6c757d';
+      estado.textContent = 'Enviando a FastAPI...';
+      estado.style.color = '#007bff';
+
+      try {
+        const response = await fetch('http://127.0.0.1:8000/mqtt/publicar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mensagem: 'Hola desde el frontend' })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'ok') {
+          estado.textContent = '✓ Mensaje enviado a MQTT Broker → Subscriber lo recibe';
+          estado.style.color = '#28a745';
+        } else {
+          estado.textContent = '✗ Error: ' + (data.mensagem || 'Error desconocido');
+          estado.style.color = '#dc3545';
+        }
+      } catch (err: any) {
+        estado.textContent = '✗ Error de conexión: ' + (err.message || 'Error desconocido');
+        estado.style.color = '#dc3545';
+      } finally {
+        // Restaurar botón después de 3 segundos
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.style.backgroundColor = '#007bff';
+        }, 3000);
+      }
     });
   </script>
 </Layout>

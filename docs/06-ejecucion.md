@@ -91,7 +91,8 @@ Abre **nueva terminal** (Ctrl+Shift+T o nueva pestaña)
 ```powershell
 cd C:\Users\TU_USUARIO\Documents\uni\protoocolo-mqtt
 venv\Scripts\activate
-python subscriber/subscriber.py
+cd mqtt-frontend
+python subscriber.py
 ```
 
 Salida esperada:
@@ -108,7 +109,8 @@ Abre **otra terminal nueva**
 ```powershell
 cd C:\Users\TU_USUARIO\Documents\uni\protoocolo-mqtt
 venv\Scripts\activate
-uvicorn app.main:app --reload
+cd backend
+uvicorn main:app --reload
 ```
 
 Salida esperada:
@@ -178,16 +180,17 @@ Mensaje publicado en demo/mensaje: Hola MQTT
 | Terminal | Comando | Qué Hace |
 |----------|---------|----------|
 | 1 | `mosquitto -v` | Broker MQTT (logs visibles) |
-| 2 | `python subscriber/subscriber.py` | Escucha e imprime mensajes |
-| 3 | `uvicorn app.main:app --reload` | API REST en puerto 8000 |
-| 4 | `curl ...` | Envía mensaje de prueba |
+| 2 | `cd mqtt-frontend && python subscriber.py` | Escucha e imprime mensajes |
+| 3 | `cd backend && uvicorn main:app --reload` | API REST en puerto 8000 |
+| 4 | `cd frontend-astro-react && astro dev --background` | Frontend web con botón |
+| 5 | Abre `http://localhost:4321` y haz click | Prueba visual |
 
 ## Detener Todo
 
 - **Terminal 1**: `Ctrl+C` (detiene Mosquitto)
 - **Terminal 2**: `Ctrl+C` (detiene subscriber)
 - **Terminal 3**: `Ctrl+C` (detiene FastAPI)
-- **Terminal 4**: No necesario (curl termina solo)
+- **Terminal 4**: `astro dev stop` (detiene Astro)
 
 ## Solución de Problemas
 
@@ -208,20 +211,18 @@ Mensaje publicado en demo/mensaje: Hola MQTT
 - O instala curl: `winget install curl`
 - O usa Git Bash / WSL
 
+### El frontend no muestra el estado
+- Verifica que FastAPI esté corriendo en puerto 8000
+- Abre `http://127.0.0.1:8000/docs` para ver la documentación de FastAPI
+- Revisa la consalta del navegador (F12) para ver errores de red
+
 ## Probar Múltiples Mensajes
 
-En Terminal 4, ejecuta varias veces:
-```powershell
-curl -X POST http://127.0.0.1:8000/mqtt/publicar -H "Content-Type: application/json" -d "{\"mensaje\":\"Mensaje 1\"}"
-curl -X POST http://127.0.0.1:8000/mqtt/publicar -H "Content-Type: application/json" -d "{\"mensaje\":\"Mensaje 2\"}"
-curl -X POST http://127.0.0.1:8000/mqtt/publicar -H "Content-Type: application/json" -d "{\"mensaje\":\"Mensaje 3\"}"
-```
-
-Verás en Terminal 2:
+En el frontend, haz click en el botón varias veces. Verás en Terminal 2:
 ```text
-Mensaje recibido: Mensaje 1
-Mensaje recibido: Mensaje 2
-Mensaje recibido: Mensaje 3
+Nuevo mensaje recibido: Hola desde el frontend
+Nuevo mensaje recibido: Hola desde el frontend
+Nuevo mensaje recibido: Hola desde el frontend
 ```
 
-¡Cada mensaje llega independientemente!
+¡Cada click envía un mensaje independiente!

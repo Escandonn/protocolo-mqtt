@@ -26,7 +26,7 @@ Un **Publisher** (publicador) es un cliente que:
 - No sabe quién recibe el mensaje
 - No espera respuesta
 
-En este proyecto: **FastAPI (vía mqtt_client.py)** es el publisher.
+En este proyecto: **FastAPI (vía backend/mqtt_client.py)** es el publisher.
 
 ## Qué es Subscriber
 
@@ -36,12 +36,12 @@ Un **Subscriber** (suscriptor) es un cliente que:
 - Recibe mensajes cuando llegan
 - Procesa los mensajes (callback)
 
-En este proyecto: **subscriber.py** es el subscriber.
+En este proyecto: **mqtt-frontend/subscriber.py** es el subscriber.
 
 ## Qué es un Topic
 
 Un **Topic** es un string que actúa como **canal de comunicación**.
-Ejemplo: `demo/mensaje`
+Ejemplo: `demo/mensagem`
 
 Características:
 - Jerárquico con `/` (como carpetas)
@@ -54,7 +54,7 @@ Características:
 **Publicar** = enviar un mensaje al broker en un topic específico.
 
 ```python
-client.publish("demo/mensaje", "Hola MQTT")
+client.publish("demo/mensagem", "Hola MQTT")
 ```
 
 El broker recibe el mensaje y lo entrega a todos los suscriptores de ese topic.
@@ -64,7 +64,7 @@ El broker recibe el mensaje y lo entrega a todos los suscriptores de ese topic.
 **Suscribirse** = decirle al broker: "Quiero recibir todos los mensajes de este topic".
 
 ```python
-client.subscribe("demo/mensaje")
+client.subscribe("demo/mensagem")
 ```
 
 A partir de ese momento, el callback `on_message` se ejecutará al llegar mensajes.
@@ -74,11 +74,11 @@ A partir de ese momento, el callback `on_message` se ejecutará al llegar mensaj
 ```text
 Publisher
    │
-   │ publish("demo/mensaje", "Hola")
+   │ publish("demo/mensagem", "Hola")
    ▼
 Broker
    │
-   │ entrega a suscriptores de "demo/mensaje"
+   │ entrega a suscriptores de "demo/mensagem"
    ▼
 Subscriber
    │
@@ -101,7 +101,8 @@ Procesa mensaje
 ## En Este Proyecto
 
 - **Broker**: Mosquitto en `localhost:1883`
-- **Topic**: `demo/mensaje`
-- **Publisher**: `app/mqtt_client.py` → `publish_message()`
-- **Subscriber**: `subscriber/subscriber.py` → `on_message()`
+- **Topic**: `demo/mensagem`
+- **Publisher**: `backend/mqtt_client.py` → `publish_message()`
+- **Subscriber**: `mqtt-frontend/subscriber.py` → `on_message()`
+- **Frontend**: `frontend-astro-react` (botón que llama a FastAPI)
 - **QoS**: 0 (fire and forget, por simplicidad)
