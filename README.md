@@ -1,4 +1,4 @@
-# FastAPI + MQTT + Python
+# React Astro + FastAPI + MQTT + Python
 
 Una demostración mínima de comunicación entre una API REST desarrollada con FastAPI, un broker MQTT (Mosquitto) y un frontend web (Astro).
 
